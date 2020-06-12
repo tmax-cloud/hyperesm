@@ -1,3 +1,20 @@
-# HyperCloud Template Service Broker changelog!!
+# Template Service Broker changelog!!
 All notable changes to this project will be documented in this file.
+
+<!-------------------- v4.0.0.4 start -------------------->
+
+## Template Service Broker 4.0.0.4 (Fri Jun 12 14:11:40 KST 2020)
+
+### Added
+  - [feat] template service broker test 완료. '4.0.0.4' release by seonho_choi
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v4.0.0.4 end --------------------->
 
