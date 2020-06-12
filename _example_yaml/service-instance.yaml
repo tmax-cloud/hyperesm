@@ -1,0 +1,10 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceInstance
+metadata:
+  name: seonho-instance
+  namespace: seonho-test
+spec:
+  serviceClassName: nginx-template
+  servicePlanName: 954e9d94-ff37-44f7-90d3-38fd8b5ef4d2
+  parameters:
+

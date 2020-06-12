@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: template-service-broker
+  namespace: seonho-test
+  labels:
+    hypercloud4: template-service-broker
+    name: template-service-broker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      hypercloud4: template-service-broker
+  template:
+    metadata:
+      name: template-service-broker
+      labels:
+        hypercloud4: template-service-broker
+    spec:
+      containers:
+      - name: template-service-broker
+        image: 192.168.6.110:5000/template-service-broker:test
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: template-service-broker-mnt
+          mountPath: /home/tmax/service-broker
+        env:
+        - name: BackIp
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: BackIp1
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: INSTANCEUUID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: CATALOG_NAMESPACE
+          value: default
+        - name: TZ
+          value: Asia/Seoul
+        ports:
+        - containerPort: 28677
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "1"
+            memory: "1Gi"
+      nodeSelector:
+        kubernetes.io/hostname: node3
+      serviceAccountName: seonho-test
+      volumes:
+      - name: template-service-broker-mnt
+        hostPath:
+          path: /root/template-service-broker/service-broker
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: template-service-broker-service
+  namespace: seonho-test
+spec:
+  ports:
+  - name: "port1"
+    port: 28677
+    protocol: TCP
+    targetPort: 28677
+  selector:
+    hypercloud4: template-service-broker
+  type: LoadBalancer

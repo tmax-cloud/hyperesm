@@ -1,0 +1,8 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceBroker
+metadata:
+  name: template-service-broker
+  namespace: seonho-test
+spec:
+  url: http://172.22.11.9:28677
+
