@@ -1,104 +1,68 @@
 
 package k8s.example.client;
 
-import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerBuilder;
-import org.quartz.impl.StdSchedulerFactory;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.kubernetes.client.openapi.models.V1Namespace;
-import io.kubernetes.client.openapi.models.V1NamespaceList;
-import k8s.example.client.audit.AuditController;
-import k8s.example.client.handler.UserDeleteJob;
 import k8s.example.client.k8s.K8sApiCaller;
-import k8s.example.client.metering.MeteringJob;
+import k8s.example.client.models.Settings;
 
 public class Main {
 	public static Logger logger = LoggerFactory.getLogger("K8SOperator");
 	public static void main(String[] args) {
 		try {
-			// Start webhook server
-			logger.info("[Main] Start webhook server");
-			new WebHookServer();
+			String token  = readFileLines(Constants.TOKEN_FILE_PATH);
+			String namespace = readFileLines(Constants.NAMESPACE_FILE_PATH);
 			
-			// Start Metering
-			logger.info("[Main] Start Metering per 30 mins");
-			startMeteringTimer();
+			logger.info( "Token : " + token );
+			logger.info( "Namespace : " + namespace );
 			
-			// Start UserDelete
-			logger.info("[Main] Start User Delete per Week");
-			startUserDeleteTimer();
+			if ( StringUtil.isEmpty(token) ) {
+				logger.info( "[Exception] Service Account Token is Empty" );
+			} else {
+				Settings.setToken( token );
+				if ( StringUtil.isEmpty( System.getenv(Constants.SYSTEM_ENV_NAMESPACE) ) && StringUtil.isEmpty( namespace ) ) {
+					logger.info( "[Exception] Namespace Info is Empty" );
+				} else {
+					if ( StringUtil.isNotEmpty( System.getenv(Constants.SYSTEM_ENV_NAMESPACE) ) ) {
+						Settings.setNamespace( System.getenv(Constants.SYSTEM_ENV_NAMESPACE) );
+					} else if ( StringUtil.isNotEmpty( namespace ) ) {
+						Settings.setNamespace( namespace );
+					}
+					
+					// Start webhook server
+					logger.info("[Main] Start webhook server");
+					new HttpHandler();
 
-			// Init K8S Client
-			logger.info("[Main] Init K8S Client");
-			K8sApiCaller.initK8SClient();
-			
-			// Start Trial Namespace Timer
-			logger.info("[Main] Start Trial Namespace Timer");
-			startTrialNSTimer();
-			
-			// Start Audit
-			logger.info("[Main] Start Audit controller");
-			AuditController.start();
-			
-			// Start Start K8S watchers & Controllers
-			logger.info("[Main] Start K8S watchers");
-			K8sApiCaller.startWatcher(); // Infinite loop
-			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private static void startTrialNSTimer() {
-		try {
-			V1NamespaceList nsList = K8sApiCaller.listNameSpace();
-			for ( V1Namespace ns : nsList.getItems()) {
-				if( ns.getMetadata().getLabels() != null && ns.getMetadata().getLabels().get("trial") != null
-						&& ns.getMetadata().getLabels().get("owner") != null) {
-					logger.info("[Main] Trial NameSpace : " + ns.getMetadata().getName());
-					Util.setTrialNSTimer(ns);
+					// Init K8S Client
+					logger.info("[Main] Init K8S Client");
+					K8sApiCaller.initK8SClient();
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.info( e.getMessage() );
 		}
 	}
-
-	private static void startMeteringTimer() throws SchedulerException {
-		JobDetail job = JobBuilder.newJob( MeteringJob.class )
-				.withIdentity( "MeteringJob" ).build();
-
-		CronTrigger cronTrigger = TriggerBuilder
-				.newTrigger()
-				.withIdentity( "MeteringCronTrigger" )
-				.withSchedule(
-				CronScheduleBuilder.cronSchedule( Constants.METERING_CRON_EXPRESSION ))
-				.build();
-
-		Scheduler sch = new StdSchedulerFactory().getScheduler();
-		sch.start(); sch.scheduleJob( job, cronTrigger );
-	}
 	
-	private static void startUserDeleteTimer() throws SchedulerException {
-		JobDetail job = JobBuilder.newJob( UserDeleteJob.class )
-				.withIdentity( "UserDeleteJob" ).build();
-
-		CronTrigger cronTrigger = TriggerBuilder
-				.newTrigger()
-				.withIdentity( "UserDeleteCronTrigger" )
-				.withSchedule(
-				CronScheduleBuilder.cronSchedule( Constants.USER_DELETE_CRON_EXPRESSION ))
-				.build();
-
-		Scheduler sch = new StdSchedulerFactory().getScheduler();
-		sch.start(); sch.scheduleJob( job, cronTrigger );
+	public static String readFileLines( String filePath ) {
+		StringBuffer sb = new StringBuffer();
+		try {
+			List<String> lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+			for ( String line : lines ) {
+				sb.append(line);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.info( e.getMessage() );
+		}
+	
+		return sb.toString();
 	}
 }

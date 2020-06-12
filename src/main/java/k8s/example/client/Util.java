@@ -35,7 +35,6 @@ import fi.iki.elonen.NanoHTTPD.Response;
 import io.kubernetes.client.openapi.models.V1Namespace;
 import k8s.example.client.DataObject.UserCR;
 import k8s.example.client.k8s.K8sApiCaller;
-import k8s.example.client.metering.TimerMap;
 
 public class Util {	
 	public static Logger logger = Main.logger;
@@ -215,108 +214,4 @@ public class Util {
     public static String parseImageName(String imageName) {
     	return imageName.replaceAll("[/]", "-s-").replaceAll("[_]", "-u-");
     }
-    
-    public static void setTrialNSTimer(V1Namespace nsResult) throws Exception  {
-		logger.info("   TrialNSTimer Set Service Start ");
-
-		DateTime createTime = nsResult.getMetadata().getCreationTimestamp();
-		logger.info(" CreateTime : " + createTime);
-		
-		// Set Mail, Delete Time 
-		DateTime mailTime = createTime.plusDays(23);
-		DateTime deleteTime = createTime.plusDays(30);
-		if ( nsResult.getMetadata().getLabels().get("period") != null ) {
-			deleteTime = createTime.plusDays( Integer.parseInt(nsResult.getMetadata().getLabels().get("period")) * 30 );
-			mailTime = deleteTime.minusDays(7);
-		}
-
-		Timer timer = new Timer(nsResult.getMetadata().getUid() + "#" + nsResult.getMetadata().getName() + "#" + nsResult.getMetadata().getLabels().get("owner") + "#" + deleteTime.toDateTime().toString("yyyy-MM-dd") );
-
-		timer.schedule(new TimerTask() {
-			public void run() {
-				try {
-					String nsId = Thread.currentThread().getName().split("#")[0];
-					String nsName = Thread.currentThread().getName().split("#")[1];
-					String userId = Thread.currentThread().getName().split("#")[2];
-					String deleteTime = Thread.currentThread().getName().split("#")[3];
-					logger.info("   Trial NameSpace [ " + nsName + " ] Mail Service before 1 weeks of deletion Start");
-					logger.info("   User ID : " + userId );
-					
-					V1Namespace nameSpace = K8sApiCaller.getNameSpace(nsName);
-					if ( nameSpace.getMetadata().getLabels() != null && nameSpace.getMetadata().getLabels().get("trial") != null
-							&& nameSpace.getMetadata().getLabels().get("owner") != null) {
-						logger.info("   Still Trial NameSpace, Send Info Mail to User [ " + userId + " ]");
-						UserCR user = K8sApiCaller.getUser( userId );
-						String email = user.getUserInfo().getEmail();
-						logger.info("   Email : " + email );
-						String subject = " 신청해주신 Trial NameSpace [ " + nameSpace.getMetadata().getName() + " ] 만료 안내 ";
-						String body = Constants.TRIAL_TIME_OUT_CONTENTS;
-						body = body.replaceAll("%%TRIAL_END_TIME%%", deleteTime);
-						Util.sendMail(email, subject, body);
-					} else {
-						logger.info("   Paid NameSpace, Nothing to do ");
-					}
-				} catch (Exception e) {
-					logger.info( "  Exception : " + e.getMessage());
-					e.printStackTrace();
-				} catch (Throwable e) {
-					logger.info( "  Exception : " + e.getMessage());
-					e.printStackTrace();
-				}
-			}
-		}, mailTime.toDate());
-		
-		logger.info("   Set Trial NameSpace Sending Mail Timer Success ");
-
-		timer.schedule(new TimerTask() {
-			public void run() {
-				try {
-					String nsId = Thread.currentThread().getName().split("#")[0];
-					String nsName = Thread.currentThread().getName().split("#")[1];
-					String userId = Thread.currentThread().getName().split("#")[2];
-					logger.info(" Trial NameSpace [ " + nsName + " ] deletion Start");
-					logger.info(" User ID : " + userId );
-					
-					V1Namespace nameSpace = K8sApiCaller.getNameSpace(nsName);
-					if ( nameSpace.getMetadata().getLabels() != null && nameSpace.getMetadata().getLabels().get("trial") != null 
-							&& nameSpace.getMetadata().getLabels().get("owner") != null) {
-						logger.info(" Still Trial NameSpace, Delete Expired Namespace [ " + nsName + " ]");
-						K8sApiCaller.deleteRoleBinding(nsName, "trial-" + nsName);
-						K8sApiCaller.deleteNameSpace(nsName);
-					} else {
-						logger.info(" Paid NameSpace, Nothing to do ");
-					}
-				} catch (Exception e) {
-					logger.info( "Exception : " + e.getMessage());
-					e.printStackTrace();
-				} catch (Throwable e) {
-					logger.info( "Exception : " + e.getMessage());
-					e.printStackTrace();
-				}
-			}
-		}, deleteTime.toDate());
-		
-		logger.info("   Set Trial NameSpace Delete Timer Success ");
-
-		// Insert to TimerMap
-		TimerMap.addTimer(nsResult.getMetadata().getName(), timer );
-		for (String nsName : TimerMap.getTimerList()) {
-			logger.info("   Registered NameSpace Timer in test : " + nsName );
-		}	
-	}
-    
-    public static void deleteTrialNSTimer( String nsName ) throws Exception  {
-    	Timer timer = TimerMap.getTimer(nsName);
-    	timer.cancel();
-    	TimerMap.removeTimer(nsName);	
-		logger.info("   Delete Trial NameSpace Timer Success ");
-
-    }
-
-	public static String printExceptionError(Exception e) {
-		StringWriter sw = new StringWriter();
-		e.printStackTrace(new PrintWriter(sw));
-		return sw.toString();
-	}
-    
 }

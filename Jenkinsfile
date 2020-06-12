@@ -1,9 +1,9 @@
 node {
 	def gitBaseAddress = "github.com"
-	def gitBuildAddress = "${gitBaseAddress}/tmax-cloud/hypercloud-operator.git"
+	def gitBuildAddress = "${gitBaseAddress}/tmax-cloud/template-service-broker.git"
 	
-	def hcBuildDir = "/var/lib/jenkins/workspace/hypercloud-operator"
-	def imageBuildHome = "/root/HyperCloud-image-build/hypercloud4-operator"
+	def hcBuildDir = "/var/lib/jenkins/workspace/template-service-broker"
+	def imageBuildHome = "/root/HyperCloud-image-build/template-service-broker"
 
 	def version = "${params.majorVersion}.${params.minorVersion}.${params.tinyVersion}.${params.hotfixVersion}"
 	def preVersion = "${params.majorVersion}.${params.minorVersion}.${params.tinyVersion}.${params.preHotfixVersion}"
@@ -27,32 +27,20 @@ node {
     }
 
     stage('file home copy') {
-		sh "sudo rm -rf ${imageBuildHome}/hypercloud4-operator/"
+		sh "sudo rm -rf ${imageBuildHome}/service-broker/"
 		sh "sudo rm -f ${imageBuildHome}/start.sh"
-		sh "sudo cp -r ${binaryHome}/hypercloud4-operator ${imageBuildHome}/hypercloud4-operator"
+		sh "sudo cp -r ${binaryHome}/service-broker ${imageBuildHome}/service-broker"
 		sh "sudo cp ${binaryHome}/start.sh ${imageBuildHome}/start.sh"
     }
-    
-	stage('make crd directory') {
-		sh "sudo sh ${scriptHome}/hypercloud-make-crd-yaml.sh ${version}"
-		sh "sudo cp -r ${hcBuildDir}/_yaml_CRD/${version} ${imageBuildHome}/hypercloud4-operator/_yaml_CRD"
-	}
     
 	stage('make change log'){
 		sh "sudo sh ${scriptHome}/hypercloud-make-changelog.sh ${version} ${preVersion}"
 	}
 	
 	stage('build & push image'){
-		sh "sudo docker build --tag tmaxcloudck/hypercloud-operator:${imageTag} ${imageBuildHome}/"
-		sh "sudo docker push tmaxcloudck/hypercloud-operator:${imageTag}"
+		sh "sudo docker build --tag tmaxcloudck/template-service-broker:${imageTag} ${imageBuildHome}/"
+		sh "sudo docker push tmaxcloudck/template-service-broker:${imageTag}"
 	}
-	
-	stage('send swagger yaml to ftp'){
-		dir ("${hcBuildDir}") {
-			sh "sudo sshpass -p 'ck-ftp' scp -o StrictHostKeyChecking=no ${hcBuildDir}/_swagger/operator-extensiono-api.yaml ck-ftp@192.168.1.150:/home/ck-ftp/api/4.1/hypercloud-operator-ext"
-		}	
-	}
-	
 	
 	stage('git commit & push'){
 		dir ("${hcBuildDir}") {
@@ -64,7 +52,7 @@ node {
 
 			sh "git add -A"
 
-			sh (script:'git commit -m "[Version-Up] make changelog & make new crd directory" || true')
+			sh (script:'git commit -m "[Version-Up] make changelog" || true')
 			sh "git tag v${version}"
 			
 			sh "sudo git push -u origin +${params.buildBranch}"

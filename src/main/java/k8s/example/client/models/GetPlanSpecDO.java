@@ -11,8 +11,8 @@ public class GetPlanSpecDO {
 	private String externalName = null;
 	private Boolean free = null;
 	private Map<String, String> instanceCreateParameterSchema = null;
-	private String clusterServiceBrokerName = null;
-	private Object clusterServiceClassRef = null;
+	private String serviceBrokerName = null;
+	private Object serviceClassRef = null;
 	
 	public Boolean getBindable() {
 		return bindable;
@@ -56,23 +56,24 @@ public class GetPlanSpecDO {
 	public void setInstanceCreateParameterSchema(Map<String, String> instanceCreateParameterSchema) {
 		this.instanceCreateParameterSchema = instanceCreateParameterSchema;
 	}
-	public String getClusterServiceBrokerName() {
-		return clusterServiceBrokerName;
+	
+	public String getServiceBrokerName() {
+		return serviceBrokerName;
 	}
-	public void setClusterServiceBrokerName(String clusterServiceBrokerName) {
-		this.clusterServiceBrokerName = clusterServiceBrokerName;
+	public void setServiceBrokerName(String serviceBrokerName) {
+		this.serviceBrokerName = serviceBrokerName;
 	}
-	public Object getClusterServiceClassRef() {
-		return clusterServiceClassRef;
+	public Object getServiceClassRef() {
+		return serviceClassRef;
 	}
-	public void setClusterServiceClassRef(Object clusterServiceClassRef) {
-		this.clusterServiceClassRef = clusterServiceClassRef;
+	public void setServiceClassRef(Object serviceClassRef) {
+		this.serviceClassRef = serviceClassRef;
 	}
 	@Override
 	public String toString() {
 		return "GetPlanSpecDO [bindable=" + bindable + ", description=" + description + ", externalID=" + externalID
 				+ ", externalMetadata=" + externalMetadata + ", externalName=" + externalName + ", free=" + free
 				+ ", instanceCreateParameterSchema=" + instanceCreateParameterSchema + ", clusterServiceBrokerName="
-				+ clusterServiceBrokerName + ", clusterServiceClassRef=" + clusterServiceClassRef + "]";
+				+ serviceBrokerName + ", clusterServiceClassRef=" + serviceClassRef + "]";
 	}
 }

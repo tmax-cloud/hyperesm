@@ -46,8 +46,6 @@ public class CatalogHandler extends GeneralHandler {
 			logger.info( "Exception message: " + e.getStackTrace().toString() );
 			logger.info( "Exception message: " + e.toString() );
 
-
-			
 			e.printStackTrace();
 			status = Status.NOT_FOUND;
 			throw e;

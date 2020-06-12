@@ -1,6 +1,20 @@
 package k8s.example.client;
 
 public class Constants {
+	
+	public static final String TOKEN_FILE_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+	public static final String NAMESPACE_FILE_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/namespace";
+	public static final String SYSTEM_ENV_NAMESPACE = "NAMESPACE";
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static final String ISSUER = "Tmax-ProAuth";
 //	public static final String ACCESS_TOKEN_SECRET_KEY = "Access-Token-Secret-Key";
 	public static final String ACCESS_TOKEN_SECRET_KEY = "ProAuth_Secret";
@@ -10,7 +24,6 @@ public class Constants {
 	
 	public static final String TEMPLATE_NAMESPACE = "hypercloud4-system";
 	public static final String DEFAULT_NAMESPACE = "default";
-	public static final String SYSTEM_ENV_CATALOG_NAMESPACE = "CATALOG_NAMESPACE";
 	public static final String REGISTRY_NAMESPACE = "hypercloud4-system";
 
 	public static final String CUSTOM_OBJECT_GROUP = "tmax.io";
