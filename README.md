@@ -1,2 +1,2 @@
-# hypercloud-operator
+# Template Service Broker
 
