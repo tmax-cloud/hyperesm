@@ -44,23 +44,23 @@ node {
 	
 	stage('git commit & push'){
 		dir ("${hcBuildDir}") {
-			sh "git checkout ${params.buildBranch}"
+			sh "sudo git checkout ${params.buildBranch}"
 
-			sh "git config --global user.name ${userName}"
-			sh "git config --global user.email ${userEmail}"
-			sh "git config --global credential.helper store"
+			sh "sudo git config --global user.name ${userName}"
+			sh "sudo git config --global user.email ${userEmail}"
+			sh "sudo git config --global credential.helper store"
 
-			sh "git add -A"
+			sh "sudo git add -A"
 
-			sh (script:'git commit -m "[Version-Up] make changelog" || true')
-			sh "git tag v${version}"
+			sh (script:'sudo git commit -m "[Version-Up] make changelog" || true')
+			sh "sudo git tag v${version}"
 			
 			sh "sudo git push -u origin +${params.buildBranch}"
 			sh "sudo git push origin v${version}"
 
-			sh "git fetch --all"
-			sh "git reset --hard origin/${params.buildBranch}"
-			sh "git pull origin ${params.buildBranch}"
+			sh "sudo git fetch --all"
+			sh "sudo git reset --hard origin/${params.buildBranch}"
+			sh "sudo git pull origin ${params.buildBranch}"
 		}	
 	}
 	stage('clean repo'){
