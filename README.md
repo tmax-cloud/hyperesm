@@ -49,6 +49,9 @@ metadata:
   name: service-broker-role
   namespace: example-ns
 rules:
+- apiGroups: ['']
+  resources: ['*']
+  verbs: ['*']
 - apiGroups: ["tmax.io"]
   resources: ["*"]
   verbs: ["*"]
