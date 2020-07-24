@@ -67,7 +67,7 @@ public class ServiceBindingHandler extends GeneralHandler {
 //				logger.info("Application URL: " + inDO.getBind_resource().getRoute());
 //			}
 			
-			response = K8sApiCaller.insertBindingSecret(instanceId, bindingId, inDO);
+			response = K8sApiCaller.insertBindingSecret(inDO.getContext().getInstance_name()+"."+instanceId, bindingId, inDO);
 			status = Status.OK;
 		} catch (Exception e) {
 			logger.info( "  Failed to bind instance of service class \"" + inDO.getService_id() + "\"");

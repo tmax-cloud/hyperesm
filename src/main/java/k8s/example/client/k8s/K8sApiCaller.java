@@ -403,7 +403,7 @@ public class K8sApiCaller {
 				JSONObject metadataJson = (JSONObject) JSONValue.parse(objectJson.get("metadata").toString());
 
 				String name = metadataJson.get("name").toString();
-				String namespace = "default";
+				String namespace = inDO.getContext().getNamespace();
 				if (metadataJson.get("namespace") != null) {
 					namespace = metadataJson.get("namespace").toString();
 				}
