@@ -4,6 +4,9 @@ metadata:
   namespace: seonho-test
   name: service-broker-role
 rules:
+- apiGroups: ['']
+  resources: ['*']
+  verbs: ['*']
 - apiGroups: ["tmax.io"] # "" indicates the core API group
   resources: ["*"]
   verbs: ["*"]
