@@ -33,8 +33,12 @@ $ kubectl create namespace example-ns
 #### ServiceAccount
 > Create a service account to pass permission to template service broker server.
 
-```shell
-$ kubectl create serviceaccount example-account -n example-ns
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: example-account
+  namespace: example-ns
 ```
 
 ---
