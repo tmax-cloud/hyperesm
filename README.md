@@ -7,6 +7,8 @@
 ![Architecture](https://user-images.githubusercontent.com/65938055/84469785-d4120000-acbc-11ea-8524-51bc2a9812fc.png)
 
 
+## prerequisite Install
+- Hypercloud-opertaor
 
 ## Install Template Service Broker
 
@@ -56,9 +58,15 @@ rules:
 - apiGroups: ['']
   resources: ['*']
   verbs: ['*']
+- apiGroups: ['apps']
+  resources: ['*']
+  verbs: ['*']
 - apiGroups: ["tmax.io"]
-  resources: ["*"]
+  resources: ["templates","templateinstances"]
   verbs: ["*"]
+- apiGroups: ["tmax.io"]
+  resources: ["catalogserviceclaims"]
+  verbs: ["get","list","create","delete"]
 - apiGroups: ["servicecatalog.k8s.io"]
   resources: ["*"]
   verbs: ["*"]
@@ -66,8 +74,25 @@ rules:
 
 ---
 
+#### ClusterRole
+> Create a ClusterRole.
+
+```yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: service-broker-cluster-role
+rules:
+- apiGroups: ["servicecatalog.k8s.io"]
+  resources: ["clusterserviceclasses","clusterserviceplans"]
+  verbs: ["get","list"]
+```
+
+---
+
 #### RoleBinding
 > Create a RoleBinding. Bind Role and Service Account.
+>> ${USER_ID} : your login id in hypercloud console
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -76,11 +101,38 @@ metadata:
   name: service-broker-rolebinding
   namespace: example-ns
 subjects:
+- kind: User
+  apiGroup: rbac.authorization.k8s.io
+  name: ${USER_ID}
 - kind: ServiceAccount
   name: example-account
 roleRef:
   kind: Role
   name: service-broker-role
+  apiGroup: rbac.authorization.k8s.io
+```
+
+---
+
+#### ClusterRoleBinding
+> Create a ClusterRoleBinding. Bind Role and Service Account.
+>> ${USER_ID} : your login id in hypercloud console
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: service-broker-cluster-rolebinding
+subjects:
+- kind: User
+  apiGroup: rbac.authorization.k8s.io
+  name: ${USER_ID}
+- kind: ServiceAccount
+  name: example-account
+  namespace: example-ns
+roleRef:
+  kind: ClusterRole
+  name: service-broker-cluster-role
   apiGroup: rbac.authorization.k8s.io
 ```
 
