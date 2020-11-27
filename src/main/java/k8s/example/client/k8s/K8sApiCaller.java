@@ -106,6 +106,7 @@ public class K8sApiCaller {
 				ServiceOffering service = new ServiceOffering();
 				ServiceMetadata serviceMeta = new ServiceMetadata();
 				List<ServicePlan> planList = new ArrayList<ServicePlan>();
+				String uid = template.get("metadata").get("uid").asText();
 
 				service.setName(template.get("metadata").get("name").asText());
 				service.setId(template.get("metadata").get("name").asText());
@@ -204,7 +205,7 @@ public class K8sApiCaller {
 									Map<String, String> parameters = null;
 
 									String uuid = UUID.randomUUID().toString();
-									servicePlan.setId(uuid);
+									servicePlan.setId(uid +"-"+ defaultPlaneId);
 									if (plan.get("name") == null) {
 										servicePlan.setName(template.get("metadata").get("name").asText() + "-plan"
 												+ defaultPlaneId);
