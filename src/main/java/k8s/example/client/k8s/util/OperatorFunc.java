@@ -1,0 +1,136 @@
+package k8s.example.client.k8s.util;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class OperatorFunc {
+	public OperatorFunc() {
+	}
+	
+	public static final Map<String, String> pluralMapper;
+	static {
+		pluralMapper = new HashMap<String, String>();
+		pluralMapper.put("Binding", "bindings");
+		pluralMapper.put("ComponentStatus", "componentstatuses");
+		pluralMapper.put("ConfigMap", "configmaps");
+		pluralMapper.put("Endpoints", "endpoints");
+		pluralMapper.put("Event", "events");
+		pluralMapper.put("LimitRange", "limitranges");
+		pluralMapper.put("Namespace", "namespaces");
+		pluralMapper.put("Node", "nodes");
+		pluralMapper.put("PersistentVolumeClaim", "persistentvolumeclaims");
+		pluralMapper.put("PersistentVolume", "persistentvolumes");
+		pluralMapper.put("Pod", "pods");
+		pluralMapper.put("PodTemplate", "podtemplates");
+		pluralMapper.put("ReplicationController", "replicationcontrollers");
+		pluralMapper.put("ResourceQuota", "resourcequotas");
+		pluralMapper.put("Secret", "secrets");
+		pluralMapper.put("ServiceAccount", "serviceaccounts");
+		pluralMapper.put("Service", "services");
+		pluralMapper.put("MutatingWebhookConfiguration", "mutatingwebhookconfigurations");
+		pluralMapper.put("ValidatingWebhookConfiguration", "validatingwebhookconfigurations");
+		pluralMapper.put("CustomResourceDefinition", "customresourcedefinitions");
+		pluralMapper.put("APIService", "apiservices");
+		pluralMapper.put("ControllerRevision", "controllerrevisions");
+		pluralMapper.put("DaemonSet", "daemonsets");
+		pluralMapper.put("Deployment", "deployments");
+		pluralMapper.put("ReplicaSet", "replicasets");
+		pluralMapper.put("StatefulSet", "statefulsets");
+		pluralMapper.put("TokenReview", "tokenreviews");
+		pluralMapper.put("LocalSubjectAccessReview", "localsubjectaccessreviews");
+		pluralMapper.put("SelfSubjectAccessReview", "selfsubjectaccessreviews");
+		pluralMapper.put("SelfSubjectRulesReview", "selfsubjectrulesreviews");
+		pluralMapper.put("SubjectAccessReview", "subjectaccessreviews");
+		pluralMapper.put("HorizontalPodAutoscaler", "horizontalpodautoscalers");
+		pluralMapper.put("CronJob", "cronjobs");
+		pluralMapper.put("Job", "jobs");
+		pluralMapper.put("TemplateInstance", "templateinstances");
+		pluralMapper.put("Template", "templates");
+		pluralMapper.put("CDI", "cdis");
+		pluralMapper.put("CephBlockPool", "cephblockpools");
+		pluralMapper.put("CephCluster", "cephclusters");
+		pluralMapper.put("CephFilesystem", "cephfilesystems");
+		pluralMapper.put("CephNFS", "cephnfses");
+		pluralMapper.put("CephObjectStore", "cephobjectstores");
+		pluralMapper.put("CephObjectStoreUser", "cephobjectstoreusers");
+		pluralMapper.put("CertificateSigningRequest", "certificatesigningrequests");
+		pluralMapper.put("Lease", "leases");
+		pluralMapper.put("Event", "events");
+		pluralMapper.put("Ingress", "ingresses");
+		pluralMapper.put("KubeVirt", "kubevirts");
+		pluralMapper.put("VirtualMachineInstanceMigration", "virtualmachineinstancemigrations");
+		pluralMapper.put("VirtualMachineInstancePreset", "virtualmachineinstancepresets");
+		pluralMapper.put("VirtualMachineInstanceReplicaSet", "virtualmachineinstancereplicasets");
+		pluralMapper.put("VirtualMachineInstance", "virtualmachineinstances");
+		pluralMapper.put("VirtualMachine", "virtualmachines");
+		pluralMapper.put("NodeMetrics", "nodes");
+		pluralMapper.put("PodMetrics", "pods");
+		pluralMapper.put("Alertmanager", "alertmanagers");
+		pluralMapper.put("PodMonitor", "podmonitors");
+		pluralMapper.put("Prometheus", "prometheuses");
+		pluralMapper.put("PrometheusRule", "prometheusrules");
+		pluralMapper.put("ServiceMonitor", "servicemonitors");
+		pluralMapper.put("Ingress", "ingresses");
+		pluralMapper.put("NetworkPolicy", "networkpolicies");
+		pluralMapper.put("RuntimeClass", "runtimeclasses");
+		pluralMapper.put("PodDisruptionBudget", "poddisruptionbudgets");
+		pluralMapper.put("PodSecurityPolicy", "podsecuritypolicies");
+		pluralMapper.put("ClusterRoleBinding", "clusterrolebindings");
+		pluralMapper.put("ClusterRole", "clusterroles");
+		pluralMapper.put("RoleBinding", "rolebindings");
+		pluralMapper.put("Role", "roles");
+		pluralMapper.put("Volume", "volumes");
+		pluralMapper.put("PriorityClass", "priorityclasses");
+		pluralMapper.put("ClusterServiceBroker", "clusterservicebrokers");
+		pluralMapper.put("ClusterServiceClass", "clusterserviceclasses");
+		pluralMapper.put("ClusterServicePlan", "clusterserviceplans");
+		pluralMapper.put("ServiceBinding", "servicebindings");
+		pluralMapper.put("ServiceBroker", "servicebrokers");
+		pluralMapper.put("ServiceClass", "serviceclasses");
+		pluralMapper.put("ServiceInstance", "serviceinstances");
+		pluralMapper.put("ServicePlan", "serviceplans");
+		pluralMapper.put("CSIDriver", "csidrivers");
+		pluralMapper.put("CSINode", "csinodes");
+		pluralMapper.put("StorageClass", "storageclasses");
+		pluralMapper.put("VolumeAttachment", "volumeattachments");
+		pluralMapper.put("Task", "tasks");
+		pluralMapper.put("TaskRun", "taskruns");
+		pluralMapper.put("Pipeline", "pipelines");
+		pluralMapper.put("PipelineRun", "pipelineruns");
+		pluralMapper.put("PipelineResource", "pipelineresources");
+		pluralMapper.put("Condition", "conditions");
+		pluralMapper.put("ClusterTriggerBinding", "clustertriggerbindings");
+		pluralMapper.put("TriggerBinding", "triggerbindings");
+		pluralMapper.put("TriggerTemplate", "triggertemplates");
+		pluralMapper.put("EventListener", "eventlisteners");
+		pluralMapper.put("HelmRelease", "helmreleases");
+		
+		pluralMapper.put("KubeadmConfig", "kubeadmconfigs");
+		pluralMapper.put("KubeadmConfigTemplate", "kubeadmconfigtemplates");
+		pluralMapper.put("Cluster", "clusters");
+		pluralMapper.put("MachineDeployment", "machinedeployments");
+		pluralMapper.put("MachineHealthCheck", "machinehealthchecks");
+		pluralMapper.put("Machine", "machines");
+		pluralMapper.put("MachineSet", "machinesets");
+		pluralMapper.put("Provider", "providers");
+		pluralMapper.put("KubeadmControlPlane", "kubeadmcontrolplanes");
+		pluralMapper.put("MachinePool", "machinepools");
+		pluralMapper.put("AWSCluster", "awsclusters");
+		pluralMapper.put("AWSMachine", "awsmachines");
+		pluralMapper.put("AWSMachineTemplate", "awsmachinetemplates");
+
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+//		pluralMapper.put("", "");
+	}
+
+}
