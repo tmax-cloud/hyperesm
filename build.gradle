@@ -82,6 +82,6 @@ task copyStartShell(type: Copy) {
 }
 
 task copyK8sOperatorHome(type: Copy) {
-	from '_hyper_esm'
+	from '_hyperesm'
 	into 'build/hyperesm'
 }
