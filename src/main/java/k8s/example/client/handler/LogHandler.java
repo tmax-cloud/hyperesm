@@ -1,12 +1,21 @@
 package k8s.example.client.handler;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.hadoop.hdds.conf.OzoneConfiguration;
+import org.apache.hadoop.ozone.client.ObjectStore;
+import org.apache.hadoop.ozone.client.OzoneBucket;
+import org.apache.hadoop.ozone.client.OzoneClient;
+import org.apache.hadoop.ozone.client.OzoneClientFactory;
+import org.apache.hadoop.ozone.client.OzoneVolume;
+import org.apache.hadoop.ozone.client.VolumeArgs;
+import org.apache.hadoop.ozone.client.io.OzoneOutputStream;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
@@ -23,12 +32,12 @@ import k8s.example.client.Main;
 import k8s.example.client.models.BindingInDO;
 import k8s.example.client.models.BindingOutDO;
 
-public class EventHandler extends GeneralHandler {
+public class LogHandler extends GeneralHandler {
     private Logger logger = Main.logger;
 	@Override
-    public Response put(
+    public Response post(
       UriResource uriResource, Map<String, String> urlParams, IHTTPSession session) {
-		logger.info("***** PUT /v1/submodules/:mod_name");
+		logger.info("***** POST /v1/submodules/:mod_name");
 		
 		BindingOutDO response = null;
 		Map<String, String> body = new HashMap<String, String>();
@@ -38,28 +47,34 @@ public class EventHandler extends GeneralHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+        
+        logger.info("***** BODY TEST");
+		for(String key : body.keySet()) {
+			String value = body.get(key);
+			logger.info("Body Key: " + key);
+			logger.info("Body value: " + value);
+		}
+		
 		String moduleName = urlParams.get("mod_name");
 		logger.info("Instance ID: " + moduleName);
 		
-        String outDO = null;
+		String outDO = null;
 		IStatus status = null;
 		
 		try {
-			String bodyStr = readFile(body.get("content"), Integer.valueOf(session.getHeaders().get("content-length")));
-			logger.info("Body: " + bodyStr);
-			
-//			inDO = new ObjectMapper().readValue(bodyStr, BindingInDO.class);
-//			logger.info("Service ID: " + inDO.getService_id()
-//			logger.info("Service Plan ID: " + inDO.getPlan_id());
-//			logger.info("Context: " + inDO.getContext().toString()
-//			if(!inDO.getBind_resource().getApp_guid().isEmpty()) {
-//				logger.info("Application GUID: " + inDO.getBind_resource().getApp_guid());
-//			}
+			OzoneClient ozClient = OzoneClientFactory.getRpcClient("172.23.4.114", 9862, new OzoneConfiguration());
+			ObjectStore objectStore = ozClient.getObjectStore();
+//			objectStore.createVolume("tmax", VolumeArgs.newBuilder().setOwner("tmax").setAdmin("tmax").build());
+			OzoneVolume vol = objectStore.getVolume("tmax");
+//			vol.createBucket("tmax");
+			OzoneBucket buc = vol.getBucket("tmax");
+			OzoneOutputStream logStream = buc.createKey(moduleName + "-" + String.valueOf(System.currentTimeMillis()/1000), 104857600);
+			logStream.write(body.get("postData").getBytes());
+			logStream.close();
 			status = Status.OK;
 		} catch (Exception e) {
-			logger.info( "  Failed to read event body \"");
-			logger.info( "Exception message: " + e.getMessage() );
+			logger.info("    Failed to put log  \"");
+			logger.info("Exception message: " + e.getMessage());
 			e.printStackTrace();
 			status = Status.BAD_REQUEST;
 		}
@@ -71,31 +86,4 @@ public class EventHandler extends GeneralHandler {
 //		logger.info();
 		return NanoHTTPD.newFixedLengthResponse(status, NanoHTTPD.MIME_HTML, outDO);
     }
-	
-	private String readFile(String path, Integer length) {
-		Charset charset = Charset.defaultCharset();
-		String bodyStr = "";
-		int byteCount;
-		try {
-			ByteBuffer buf = ByteBuffer.allocate(Integer.valueOf(length));
-			FileInputStream fis = new FileInputStream(path);
-			FileChannel dest = fis.getChannel();
-			
-			while(true) {
-				byteCount = dest.read(buf);
-				if(byteCount == -1) {
-					break;
-				} else {
-					buf.flip();
-					bodyStr += charset.decode(buf).toString();
-					buf.clear();
-				}
-			}
-			dest.close();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		return bodyStr;
-	}
 }

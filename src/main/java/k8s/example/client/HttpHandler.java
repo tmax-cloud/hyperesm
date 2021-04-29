@@ -8,6 +8,7 @@ import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
 import io.sundr.shaded.org.apache.velocity.app.event.EventHandler;
 import k8s.example.client.handler.CatalogHandler;
+import k8s.example.client.handler.LogHandler;
 import k8s.example.client.handler.ServiceBindingHandler;
 import k8s.example.client.handler.ServiceInstanceHandler;
 
@@ -26,6 +27,6 @@ public class HttpHandler extends RouterNanoHTTPD {
     	addRoute("/v2/catalog", CatalogHandler.class);
     	addRoute("/v2/service_instances/:instance_id/service_bindings/:binding_id", ServiceBindingHandler.class);
     	addRoute("/v2/service_instances/:instance_id", ServiceInstanceHandler.class);
-    	addRoute("/v1/submodules/:mod_name", EventHandler.class);
+    	addRoute("/v1/submodules/:mod_name", LogHandler.class);
     }
 }
